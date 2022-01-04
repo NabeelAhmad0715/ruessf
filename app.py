@@ -5,12 +5,10 @@ import os
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
-file1 = open('lang_vectors.pkl', 'rb')
-eng_v = pickle.load(file1)
-rmu_v = pickle.load(file1)
-acu_v = pickle.load(file1)
-file1.close()
-
+with open('lang_vectors.pkl', 'rb') as file1:
+    eng_v = pickle.load(file1)
+    rmu_v = pickle.load(file1)
+    acu_v = pickle.load(file1)
 english_model = pickle.load(open('english_model', "rb"))
 english_features = pickle.load(open('english_features', "rb"))
 roman_urdu_model = pickle.load(open('roman_urdu_model', "rb"))
@@ -33,8 +31,7 @@ roman_urdu_vectorizer = getCountVectorizer(roman_urdu_features)
 def findClass(text, modelName, vect):
     x = vect.transform([text]).toarray()
     p = modelName.predict(x)
-    a = int(p[0])
-    return a
+    return int(p[0])
 
 
 def preprocess(text):
@@ -50,10 +47,11 @@ def preprocess(text):
 
 def calculateProbability(text_message, language_set):
     splitted_message = text_message.split()
-    found = 0
-    for i in range(len(splitted_message)):
-        if splitted_message[i] in language_set:
-            found += 1
+    found = sum(
+        splitted_message[i] in language_set
+        for i in range(len(splitted_message))
+    )
+
     probability = float(found) / len(splitted_message)
     print(probability)
     return probability
